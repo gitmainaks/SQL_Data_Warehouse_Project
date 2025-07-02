@@ -1,4 +1,5 @@
 
+
 /* 
    ====================================================================================
    Stored Procedure: Load Silver Layer (Bronze -> Silver)
@@ -54,12 +55,12 @@ begin
 		trim(cst_firstname) as cst_firstname,
 		trim(cst_lastname) as cst_lastname,
 		case when upper(trim(cst_marital_status)) = 'S' then 'Single'          
-			   when upper(trim(cst_marital_status)) = 'M' then 'Married'
-			   else 'n/a'
+			 when upper(trim(cst_marital_status)) = 'M' then 'Married'
+			 else 'n/a'
 		end cst_marital_status,
 		case when upper(trim(cst_gndr)) = 'F' then 'Female'          
-			   when upper(trim(cst_gndr)) = 'M' then 'Male'
-			   else 'n/a'
+			 when upper(trim(cst_gndr)) = 'M' then 'Male'
+			 else 'n/a'
 		end cst_gndr,
 		cst_create_date
 		from (
@@ -131,22 +132,22 @@ begin
 			sls_prd_key,
 			sls_cust_id,
 			case when sls_order_dt = 0 or len(sls_order_dt) != 8 then null
-				   else cast(cast(sls_order_dt as varchar) as date) 
+				else cast(cast(sls_order_dt as varchar) as date) 
 			end as sls_order_dt,
 			case when sls_ship_dt = 0 or len(sls_ship_dt) != 8 then null
-				   else cast(cast(sls_ship_dt as varchar) as date) 
+				else cast(cast(sls_ship_dt as varchar) as date) 
 			end as sls_ship_dt,
 			case when sls_due_dt = 0 or len(sls_due_dt) != 8 then null
-				   else cast(cast(sls_due_dt as varchar) as date) 
+				else cast(cast(sls_due_dt as varchar) as date) 
 			end as sls_due_dt,  -- Data Transformation
 			case when sls_sales is null or sls_sales <= 0 or sls_sales != sls_quantity * abs(sls_price)
-				   then sls_quantity * abs(sls_price)
-			     else sls_sales
+				then sls_quantity * abs(sls_price)
+			 else sls_sales
 		end as sls_sales,       -- Recalculate sales if original value is missing or incorrect
 		sls_quantity,
 		case when sls_price is null or sls_price <= 0
-				 then sls_sales / nullif(sls_quantity, 0)
-			   else sls_price
+				then sls_sales / nullif(sls_quantity, 0)
+			 else sls_price
 		end as sls_price        -- Derive price if original value is invalid
 		from bronze.crm_sales_details; 
 		set @end_time = getdate();
@@ -166,14 +167,14 @@ begin
 		(cid, bdate, gen)
 		select 
 		case when cid like 'NAS%' then substring(cid, 4, len(cid))   -- Remove 'NAS' prefix if present
-			   else cid
+			 else cid
 		end as cid,
 		case when bdate > getdate() then null 
-			   else bdate 
+			 else bdate 
 		end as bdate,          -- Set future birthdates to null
 		case when upper(trim(gen)) in ('F', 'FEMALE') then 'Female'
-			   when upper(trim(gen)) in ('M', 'MALE') then 'Male'
-			   else 'n/a'
+			 when upper(trim(gen)) in ('M', 'MALE') then 'Male'
+			 else 'n/a'
 		end as gen             -- Normalize gender values and handle unknown cases
 		from bronze.erp_cust_az12;
 		set @end_time = getdate();
@@ -190,9 +191,9 @@ begin
 		select 
 		replace(cid, '-', '') cid,
 		case when trim(cntry) = 'DE' then 'Germany'
-			   when trim(cntry) in ('US', 'USA') then 'United States'
-			   when trim(cntry) = '' or cntry is null then 'n/a'
-			   else trim (cntry)
+			 when trim(cntry) in ('US', 'USA') then 'United States'
+			 when trim(cntry) = '' or cntry is null then 'n/a'
+			 else trim (cntry)
 		end as cntry      -- Normalize and Handle missing or blank country codes
 		from bronze.erp_loc_a101;
 		set @end_time = getdate();
@@ -230,9 +231,8 @@ begin
 		print 'Error Message' + cast(error_state() as nvarchar);
 		print '=========================================================';
 	end catch 
-end 
+end;
 
 
-exec silver.load_silver
-
+exec silver.load_silver;
 
