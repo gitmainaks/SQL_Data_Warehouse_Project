@@ -8,4 +8,11 @@ Building a modern Data Warehouse with SQL Server, including ETL processes, data 
 
 
 
+
+
+
+
+
+
+
 ![data_architecture](https://github.com/user-attachments/assets/d200182a-0df2-4048-915f-ad924dca8b1c)
